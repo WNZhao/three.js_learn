@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../assets/threejs/three.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+var width = window.innerWidth;
+var height = window.innerHeight;
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75,width/height,1,1000);
+var render = new THREE.WebGLRenderer();
+render.setClearColor('#ffffff');
+render.setSize(width,height)
+document.body.appendChild(render.domElement);
+ // 几何体
+ var geometry = new THREE.CubeGeometry(2,2,2);
+ // 材质
+ var material = new THREE.MeshBasicMaterial({color:0xff0000});
+ var cube = new THREE.Mesh(geometry,material);
+ scene.add(cube);
+ camera.position.z = 5;
+ camera.position.z = 10; //相机在10米位置 如果太小，就是正方体里，就什么也看不到 远了小近了大
+
+function rd(){
+    requestAnimationFrame(rd);
+    cube.rotation.y -= 0.05 //绕y轴旋转
+    render.render(scene,camera); //每次给它场景和相机位置就可以看到相应的
+}
+
+rd();
+
+</script>
+</body>
+</html>
