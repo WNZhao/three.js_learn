@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>透视投影相机</title>
+    <style type="text/css">
+      div#canvas-frame {
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        height: 600px;
+        background-color: #eeeeee;
+      }
+    </style>
+    <script src="../assets/threejs/three.js"></script>
+  </head>
+  <body onload="threeStart()">
+    <div id="canvas-frame"></div>
+    <script type="text/javascript">
+      var renderer
+      var width = document.getElementById('canvas-frame').clientWidth
+      var height = document.getElementById('canvas-frame').clientHeight
+      function initThree() {
+        renderer = new THREE.WebGLRenderer({
+          antialias: true //抗锯齿
+        })
+        renderer.setSize(width, height)
+        document.getElementById('canvas-frame').appendChild(renderer.domElement)
+        renderer.setClearColor(0xffffff, 1.0) //clear时用这个颜色填充
+      }
+      var camera
+      function initCamera() {
+        //   声明一个透视影相机
+        camera = new THREE.PerspectiveCamera(45,width/height,1,1000)
+        camera.position.x =0;
+        camera.position.y=0;
+        camera.position.z=600;
+        // 快门方向
+        camera.up.x = 0;
+        camera.up.y = 1;
+        camera.up.z = 0;
+       console.log(new THREE.Vector3())
+        camera.lookAt(new THREE.Vector3())
+      }
+      var scene
+      function initScene() {
+        scene = new THREE.Scene()
+      }
+
+      var light
+      function initLight() {
+        light = new THREE.DirectionalLight(0xff0000, 1.0, 0)
+        light.position.set(100, 100, 200)
+        scene.add(light)
+      }
+      var mash
+      function initObject() {
+        var geometry = new THREE.CylinderGeometry(70,100,200,40); //圆柱体，40 园 点的密度，值越大，越圆。画圆就是点的集合
+        var material = new THREE.MeshLambertMaterial({color:0xffffff});
+        mash = new THREE.Mesh(geometry,material);
+        mash.position = new THREE.Vector3(0,0,0)
+        scene.add(mash)
+      }
+
+      function threeStart() {
+        initThree()
+        initCamera()
+        initScene()
+        initLight()
+        initObject()
+        renderer.clear()
+        renderer.render(scene, camera);
+        animate();
+      }
+
+      function animate(){
+        //   debugger
+        // camera.position.x+=0.1; //改变像机
+        // mash.position.x -= 0.1; //改变物体
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+    
+        
+      }
+    </script>
+  </body>
+</html>
