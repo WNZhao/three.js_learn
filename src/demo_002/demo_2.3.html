@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>环境光</title>
+    <title>方向光</title>
     <link rel="stylesheet" href="../assets/gui/dat.gui.css">
+    <link rel="stylesheet" href="../assets/spectrum/spectrum.css">
     <style type="text/css">
       div#canvas-frame {
         border: none;
@@ -17,9 +18,12 @@
     </style>
     <script src="../assets/threejs/three.js"></script>
     <script src="../assets/gui/dat.gui.js"></script>
+    <script src="../assets/jquery/jquery-1.9.1.js"></script>
+    <script src="../assets/spectrum/spectrum.js"></script>
   </head>
   <body onload="threeStart()">
     <div id="canvas-frame"></div>
+    <input type="text" id="custom">
     <script type="text/javascript">
       var renderer
       var width = document.getElementById('canvas-frame').clientWidth
@@ -36,7 +40,7 @@
       function initCamera() {
         //   声明一个透视影相机
         camera = new THREE.PerspectiveCamera(45,width/height,1,1000)
-        camera.position.x =0;
+        camera.position.x =600;
         camera.position.y=0;
         camera.position.z=600;
         // 快门方向
@@ -52,26 +56,29 @@
       }
 
       var light
-      var ligtPos;
+      var ligthPos;
       function initLight() {
         var ParamObj = function(){
             this.x = 0;
             this.y = 0;
             this.z = 0;
-        };
-        ligtPos = new ParamObj();
+            this.intensity = 1;
+        }
+        ligthPos = new ParamObj();
         var gui = new dat.GUI();
-        gui.add(ligtPos,"x",-10000,10000).name("环境光X的位置");
-        gui.add(ligtPos,"y",-10000,10000).name("环境光Y的位置");
-        gui.add(ligtPos,"z",-10000,10000).name("环境光Z的位置");
-        light = new THREE.AmbientLight(0x880000); //0xFF0000 0x000000 0x00FF00 0x0000FF 0x88FFFF 光中有红色的分量才会反射颜色
-        light.position.set(ligtPos.x,ligtPos.y,ligtPos.z);
+        gui.add(ligthPos,"x",-10000,10000).name('方向光的X位置')
+        gui.add(ligthPos,"y",-10000,10000).name('方向光的Y位置')
+        gui.add(ligthPos,"z",-10000,10000).name('方向光的Z位置')
+        gui.add(ligthPos,"intensity",0,1).name('方向光的强度')
+        light = new THREE.DirectionalLight(0xFF0000,ligthPos.intensity);
+        light.position.set(ligthPos.x,ligthPos.y,ligthPos.z);
+          
         scene.add(light)
       }
       var mash
       function initObject() {
-        var geometry = new THREE.CylinderGeometry(70,100,200,40); //圆柱体，40 园 点的密度，值越大，越圆。画圆就是点的集合
-        var material = new THREE.MeshLambertMaterial({color:0xffffff});
+        var geometry = new THREE.CubeGeometry(200,300,200);
+        var material = new THREE.MeshLambertMaterial({color:0xff0000});
         mash = new THREE.Mesh(geometry,material);
         mash.position = new THREE.Vector3(0,0,0)
         scene.add(mash)
@@ -100,8 +107,9 @@
       }
 
       function animate(){
-        console.log(ligtPos.x,ligtPos.y,ligtPos.z,)
-        light.position.set(new THREE.Vector3(ligtPos.x,ligtPos.y,ligtPos.z))
+          // new THREE.Vector3()
+        light.position.set(ligthPos.x,ligthPos.y,ligthPos.z)
+        light.intensity = ligthPos.intensity;
         setCameraFov()
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
@@ -111,6 +119,21 @@
           camera.fov = param.fov;
           camera.updateProjectionMatrix();
       }
+      $(function(){
+          $("#custom").spectrum({
+              color:'#f00',
+              preferredFormat:"hex",
+              showInput:true,
+              showInitial:true,
+              showPalette:true,
+              showSelectionPalette:true,
+              hide:function(tinycolor){
+                // tinycolor.toHex();
+                console.log(tinycolor.toHex())
+                light.color.setHex("0x"+tinycolor.toHex())
+              }
+          })
+      })
     </script>
   </body>
 </html>
