@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>环境光</title>
+    <link rel="stylesheet" href="../assets/gui/dat.gui.css">
+    <style type="text/css">
+      div#canvas-frame {
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        height: 600px;
+        background-color: #eeeeee;
+      }
+    </style>
+    <script src="../assets/threejs/three.js"></script>
+    <script src="../assets/gui/dat.gui.js"></script>
+  </head>
+  <body onload="threeStart()">
+    <div id="canvas-frame"></div>
+    <script type="text/javascript">
+      var renderer
+      var width = document.getElementById('canvas-frame').clientWidth
+      var height = document.getElementById('canvas-frame').clientHeight
+      function initThree() {
+        renderer = new THREE.WebGLRenderer({
+          antialias: true //抗锯齿
+        })
+        renderer.setSize(width, height)
+        document.getElementById('canvas-frame').appendChild(renderer.domElement)
+        renderer.setClearColor(0xffffff, 1.0) //clear时用这个颜色填充
+      }
+      var camera
+      function initCamera() {
+        //   声明一个透视影相机
+        camera = new THREE.PerspectiveCamera(45,width/height,1,1000)
+        camera.position.x =0;
+        camera.position.y=0;
+        camera.position.z=600;
+        // 快门方向
+        camera.up.x = 0;
+        camera.up.y = 1;
+        camera.up.z = 0;
+       console.log(new THREE.Vector3())
+        camera.lookAt(new THREE.Vector3())
+      }
+      var scene
+      function initScene() {
+        scene = new THREE.Scene()
+      }
+
+      var light
+      function initLight() {
+        var ParamObj = function(){
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
+        };
+        param = new ParamObj();
+        var gui = new dat.GUI();
+        gui.add(param,"x",-10000,10000).name("环境光X的位置");
+        gui.add(param,"y",-10000,10000).name("环境光Y的位置");
+        gui.add(param,"z",-10000,10000).name("环境光Z的位置");
+        light = new THREE.AmbientLight(0x880000); //0xFF0000 0x000000 0x00FF00 0x0000FF 0x88FFFF 光中有红色的分量才会反射颜色
+        light.position.set(param.x,param.y,param.z);
+        scene.add(light)
+      }
+      var mash
+      function initObject() {
+        var geometry = new THREE.CylinderGeometry(70,100,200,40); //圆柱体，40 园 点的密度，值越大，越圆。画圆就是点的集合
+        var material = new THREE.MeshLambertMaterial({color:0xffffff});
+        mash = new THREE.Mesh(geometry,material);
+        mash.position = new THREE.Vector3(0,0,0)
+        scene.add(mash)
+      }
+
+      var param;
+      function createUI(){
+         var ParamObj = function(){
+             this.fov = 45;
+         }
+         param = new ParamObj();
+         var gui = new dat.GUI();
+         gui.add(param,"fov",0,180).name('视角大小'); //调整范围0到180度
+      }
+
+      function threeStart() {
+        initThree()
+        initCamera()
+        initScene()
+        initLight()
+        initObject()
+        createUI()
+        renderer.clear()
+        renderer.render(scene, camera);
+        animate();
+      }
+
+      function animate(){
+        light.position.set(param.x,param.y,param.z)
+        setCameraFov()
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+
+      function setCameraFov(){
+          camera.fov = param.fov;
+          camera.updateProjectionMatrix();
+      }
+    </script>
+  </body>
+</html>
