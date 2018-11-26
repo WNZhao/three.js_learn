@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>点光源</title>
+    <link rel="stylesheet" href="../assets/gui/dat.gui.css">
+    <link rel="stylesheet" href="../assets/spectrum/spectrum.css">
+    <style type="text/css">
+      div#canvas-frame {
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        height: 600px;
+        background-color: #eeeeee;
+      }
+    </style>
+    <script src="../assets/threejs/three.js"></script>
+    <script src="../assets/gui/dat.gui.js"></script>
+    <script src="../assets/jquery/jquery-1.9.1.js"></script>
+    <script src="../assets/spectrum/spectrum.js"></script>
+  </head>
+  <body onload="threeStart()">
+    <div id="canvas-frame"></div>
+    <input type="text" id="custom">
+    <script type="text/javascript">
+      var renderer
+      var width = document.getElementById('canvas-frame').clientWidth
+      var height = document.getElementById('canvas-frame').clientHeight
+      function initThree() {
+        renderer = new THREE.WebGLRenderer({
+          antialias: true //抗锯齿
+        })
+        renderer.setSize(width, height)
+        document.getElementById('canvas-frame').appendChild(renderer.domElement)
+        renderer.setClearColor(0xffffff, 1.0) //clear时用这个颜色填充
+      }
+      var camera
+      function initCamera() {
+        //   声明一个透视影相机
+        camera = new THREE.PerspectiveCamera(45,width/height,1,1000)
+        camera.position.x =300;
+        camera.position.y=-50;
+        camera.position.z=800;
+        // 快门方向
+        camera.up.x = 0;
+        camera.up.y = 1;
+        camera.up.z = 0;
+       console.log(new THREE.Vector3())
+        camera.lookAt(new THREE.Vector3())
+      }
+      var scene
+      function initScene() {
+        scene = new THREE.Scene()
+      }
+
+      var light
+      var ligthPos;
+      function initLight() {
+        var ParamObj = function(){
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
+            this.intensity = 1;
+            this.deacy = 1;
+        }
+        ligthPos = new ParamObj();
+        var gui = new dat.GUI();
+        gui.add(ligthPos,"x",-2000,2000).name('方向光的X位置')
+        gui.add(ligthPos,"y",-2000,2000).name('方向光的Y位置')
+        gui.add(ligthPos,"z",-2000,2000).name('方向光的Z位置')
+        gui.add(ligthPos,"intensity",0,1).name('方向光的强度')
+        gui.add(ligthPos,"deacy",0,1).name('衰减')
+        // light = new THREE.DirectionalLight(0xFF0000,ligthPos.intensity);
+        light = new THREE.PointLight(0xFF0000,1,1000,ligthPos.deacy); //
+        light.position.set(ligthPos.x,ligthPos.y,ligthPos.z);
+          
+        scene.add(light)
+      }
+      var mash,mash2,mash3,mash4,mash5,mash6;
+      function initObject() {
+
+        var geometry = new THREE.CubeGeometry(200,100,50,4,4);
+        var material = new THREE.MeshLambertMaterial({color:0xffff00});
+        mash = new THREE.Mesh(geometry,material);
+        mash.position = new THREE.Vector3(0,0,0)
+        mash.position.set(0,0,0)
+        scene.add(mash)
+
+        var geometry2 = new THREE.CubeGeometry(200,100,50,4,4);
+        var material2 = new THREE.MeshLambertMaterial({color:0xfff00});
+        mash2 = new THREE.Mesh(geometry2,material2);
+        mash2.position = new THREE.Vector3(-300,0,0);
+        mash2.position.set(-300,0,0)
+        scene.add(mash2)
+
+        var geometry3 = new THREE.CubeGeometry(200,100,50,4,4);
+        var material3 = new THREE.MeshLambertMaterial({color:0xff0000});
+        mash3 = new THREE.Mesh(geometry3,material3);
+        mash3.position = new THREE.Vector3(0,-150,0)
+        mash3.position.set(0,-150,0)
+        scene.add(mash3)
+
+        var geometry4 = new THREE.CubeGeometry(200,100,50,4,4);
+        var material4 = new THREE.MeshLambertMaterial({color:0xff8800});
+        mash4 = new THREE.Mesh(geometry4,material4);
+        mash4.position = new THREE.Vector3(0,150,0)
+        mash4.position.set(0,150,0)
+        scene.add(mash4)
+
+        var geometry5 = new THREE.CubeGeometry(200,100,50,4,4);
+        var material5 = new THREE.MeshLambertMaterial({color:0xff0000});
+        mash5 = new THREE.Mesh(geometry5,material5);
+        mash5.position = new THREE.Vector3(300,0,0)
+        mash5.position.set(300,0,0)
+        scene.add(mash5)
+
+        var geometry6 = new THREE.CubeGeometry(200,100,50,4,4);
+        var material6 = new THREE.MeshLambertMaterial({color:0xff0000});
+        mash6 = new THREE.Mesh(geometry6,material6);
+        mash6.position = new THREE.Vector3(0,0,-110)
+        mash6.position.set(0,0,-130)
+       scene.add(mash6)
+      }
+
+      var param;
+      function createUI(){
+         var ParamObj = function(){
+             this.fov = 60;
+         }
+         param = new ParamObj();
+         var gui = new dat.GUI();
+         gui.add(param,"fov",0,180).name('视角大小'); //调整范围0到180度
+      }
+
+      function threeStart() {
+        initThree()
+        initCamera()
+        initScene()
+        initLight()
+        initObject()
+        createUI()
+        renderer.clear()
+        renderer.render(scene, camera);
+        animate();
+      }
+
+      function animate(){
+          // new THREE.Vector3()
+        light.position.set(ligthPos.x,ligthPos.y,ligthPos.z)
+        light.intensity = ligthPos.intensity;
+        light.deacy = ligthPos.deacy;
+        setCameraFov()
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+
+      function setCameraFov(){
+          camera.fov = param.fov;
+          camera.updateProjectionMatrix();
+      }
+      $(function(){
+          $("#custom").spectrum({
+              color:'#f00',
+              preferredFormat:"hex",
+              showInput:true,
+              showInitial:true,
+              showPalette:true,
+              showSelectionPalette:true,
+              hide:function(tinycolor){
+                // tinycolor.toHex();
+                console.log(tinycolor.toHex())
+                light.color.setHex("0x"+tinycolor.toHex())
+              }
+          })
+      })
+    </script>
+  </body>
+</html>
