@@ -79,14 +79,14 @@
       function initObject() {
 
         var geometry = new THREE.CubeGeometry(200,100,50,4,4);
-        var material = new THREE.MeshLambertMaterial({color:0xff0000});
+        var material = new THREE.MeshLambertMaterial({color:0xffff00});
         mash = new THREE.Mesh(geometry,material);
         mash.position = new THREE.Vector3(0,0,0)
         mash.position.set(0,0,0)
         scene.add(mash)
 
         var geometry2 = new THREE.CubeGeometry(200,100,50,4,4);
-        var material2 = new THREE.MeshLambertMaterial({color:0xff0000});
+        var material2 = new THREE.MeshLambertMaterial({color:0xfff00});
         mash2 = new THREE.Mesh(geometry2,material2);
         mash2.position = new THREE.Vector3(-300,0,0);
         mash2.position.set(-300,0,0)
