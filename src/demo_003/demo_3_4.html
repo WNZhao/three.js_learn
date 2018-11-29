@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>绘制图形--长方形取顶点颜色</title>
+    <link rel="stylesheet" href="../assets/gui/dat.gui.css">
+    <style type="text/css">
+       div#canvas-frame{
+           border: none;
+           cursor: pointer;
+           height: 600px;
+           background-color: #eeeeee;
+       }
+    </style>
+    <script src="../assets/threejs/three.js"></script>
+    <script src="../assets/gui/dat.gui.js"></script>
+  </head>
+  <body>
+      <div id="canvas-frame"></div>
+    <script type="text/javascript">
+       var renderer;
+       function initThree(){
+           width = document.getElementById('canvas-frame').clientWidth;
+           height = document.getElementById('canvas-frame').clientHeight;
+           renderer = new THREE.WebGLRenderer({
+               antialias: true
+           });
+           renderer.setSize(width,height);
+           document.getElementById('canvas-frame').appendChild(renderer.domElement);
+           renderer.setClearColor("#ffffff",1.0)
+       }
+       var camera;
+       function initCamera(){
+           camera = new THREE.PerspectiveCamera(45,width/height,1,10000);
+           camera.position.x = 0;
+           camera.position.y = 0;
+           camera.position.z = 500;
+           camera.up.x = 0;
+           camera.up.y = 1;
+           camera.up.z = 0;
+           camera.lookAt(new THREE.Vector3(0,0,0))
+       }
+       var scene;
+       function initScene(){
+           scene = new THREE.Scene();
+       }
+       var light;
+       function initLigth() {
+           light = new THREE.DirectionalLight(0xFF0000,1.0,0);
+           light.position.set(100,100,200)
+           scene.add(light)
+       }
+       var cube;
+       function initObject() {
+           var geometry = new THREE.PlaneGeometry(100,100,2,3); //2宽分两段，3高分3段
+           var material = new THREE.MeshBasicMaterial({
+            //    shading:THREE.FlatShading,
+            vertexColors:THREE.VertexColors,
+            wireframe:false, //这个属性是绘制线框 ,默认是false 以点的颜色去做插值
+            // color: 0xFF0000
+           })
+           var color1 = new THREE.Color(0x00900f)
+           var color2 = new THREE.Color(0x0000f0)
+           var color3 = new THREE.Color(0x20f0ff)
+           geometry.faces.forEach((face)=>{
+               face.vertexColors=[color1,color2,color3]
+           })
+           console.log(geometry)
+           var obj = new THREE.Mesh(geometry,material);
+           scene.add(obj)
+       }
+       function threeStart() {
+           initThree();
+           initCamera();
+           initScene();
+           initLigth();
+           initObject();
+           renderer.clear();
+           renderer.render(scene,camera)
+       }
+
+       threeStart()
+
+    </script>
+  </body>
+</html>

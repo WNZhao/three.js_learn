@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>绘制图形--三角形</title>
+    <link rel="stylesheet" href="../assets/gui/dat.gui.css">
+    <style type="text/css">
+       div#canvas-frame{
+           border: none;
+           cursor: pointer;
+           height: 600px;
+           background-color: #eeeeee;
+       }
+    </style>
+    <script src="../assets/threejs/three.js"></script>
+    <script src="../assets/gui/dat.gui.js"></script>
+  </head>
+  <body>
+      <div id="canvas-frame"></div>
+    <script type="text/javascript">
+       var renderer;
+       function initThree(){
+           width = document.getElementById('canvas-frame').clientWidth;
+           height = document.getElementById('canvas-frame').clientHeight;
+           renderer = new THREE.WebGLRenderer({
+               antialias: true
+           });
+           renderer.setSize(width,height);
+           document.getElementById('canvas-frame').appendChild(renderer.domElement);
+           renderer.setClearColor("#ffffff",1.0)
+       }
+       var camera;
+       function initCamera(){
+           camera = new THREE.PerspectiveCamera(45,width/height,1,10000);
+           camera.position.x = 0;
+           camera.position.y = 0;
+           camera.position.z = 500;
+           camera.up.x = 0;
+           camera.up.y = 1;
+           camera.up.z = 0;
+           camera.lookAt(new THREE.Vector3(0,0,0))
+       }
+       var scene;
+       function initScene(){
+           scene = new THREE.Scene();
+       }
+       var light;
+       function initLigth() {
+           light = new THREE.DirectionalLight(0xFF0000,1.0,0);
+           light.position.set(100,100,200)
+           scene.add(light)
+       }
+       var cube;
+       function initObject() {
+           var geometry = new THREE.Geometry(); //没有三角形 我们就从最原始的构造方法来创 点
+           var material = new THREE.MeshBasicMaterial({
+            //    shading:THREE.FlatShading,
+            vertexColors:THREE.VertexColors,
+            wireframe:false, //这个属性是绘制线框 ,默认是false 以点的颜色去做插值
+            // color: 0xFF0000
+           })
+           var color1 = new THREE.Color(0xFF0000)
+           var color2 = new THREE.Color(0x00FF00)
+           var color3 = new THREE.Color(0x0000FF)
+           var p1 = new THREE.Vector3(100,0,0)
+           var p2 = new THREE.Vector3(0,100,0)
+           var p3 = new THREE.Vector3(-100,0,0)
+           geometry.vertices.push(p1) 
+           geometry.vertices.push(p2)
+           geometry.vertices.push(p3)
+           var face = new THREE.Face3(0,1,2) //0,1,2是索引，上面点的索引 多少个三角形就有多个面
+           face.vertexColors = [color1,color2,color3];
+           geometry.faces.push(face);
+           console.log(geometry)
+           var obj = new THREE.Mesh(geometry,material);
+           scene.add(obj)
+       }
+       function threeStart() {
+           initThree();
+           initCamera();
+           initScene();
+           initLigth();
+           initObject();
+           renderer.clear();
+           renderer.render(scene,camera)
+       }
+
+       threeStart()
+
+    </script>
+  </body>
+</html>
