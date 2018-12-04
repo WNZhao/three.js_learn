@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>加载模型vtk模型</title>
+    <link rel="stylesheet" href="../assets/gui/dat.gui.css" />
+    <style type="text/css">
+      body {
+        font-family: monospace;
+        background-color: #000;
+        margin: 0;
+        overflow: hidden;
+      }
+      #info {
+        color: #fff;
+        position: absolute;
+        top: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+      }
+      #info a,
+      .button {
+        color: #f00;
+        font-weight: bold;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      div#canvas-frame {
+        border: none;
+        cursor: pointer;
+        height: 600px;
+        background-color: #eeeeee;
+      }
+    </style>
+    <script src="../assets/threejs/three.js"></script>
+    <script src="../assets/loaders/VTKLoader.js"></script>
+    <script src="../assets/Detector.js"></script>
+    <script src="../assets/stats.js"></script>
+
+  </head>
+  <body>
+    <div id="canvas-frame"></div>
+    <script type="text/javascript">
+      if (!Detector.webgl) Detector.addGetWebGLMessage()
+
+      var container, stats
+      var camera, controls, scene, renderer,mash
+      var cross
+      var winWidth = window.innerWidth,
+        winHeight = window.innerHeight
+      init()
+      animate()
+
+      function init() {
+        camera = new THREE.PerspectiveCamera(
+          60,
+          winWidth / winHeight,
+          0.01,
+          1e10
+        )
+        camera.position.z = 0.2
+        scene = new THREE.Scene()
+        scene.add(camera)
+
+        //light
+        var dirLight = new THREE.DirectionalLight(0xffffff)
+        dirLight.position.set(200, 200, 1000).normalize()
+        camera.add(dirLight) //相机中加这个光 模拟光是从相机照射出来的
+        camera.add(dirLight.target) // 这句不知道什么意思
+
+        var material = new THREE.MeshLambertMaterial({
+          color: 0xffffff,
+          side: THREE.DoubleSide
+        }) //粗造的材质，光都有反射 ，单边绘制 双边绘制
+        // 三角形有三个点 相向三角形有两个面 画点是逆时针绘制
+
+        var loader = new THREE.VTKLoader()
+        loader.load('../assets/models/vtk/bunny.vtk', function(geometry) {
+          geometry.computeVertexNormals() // 要计算一下法向量，不计算就没有光反射过去
+          mash = new THREE.Mesh(geometry, material)
+          mash.position.setY(-0.09)
+          scene.add(mash)
+          console.log('ssss')
+        })
+
+        // renderer
+        renderer = new THREE.WebGLRenderer({ antialias: false })
+        renderer.setSize(winWidth, winHeight)
+        document.getElementById('canvas-frame').appendChild(renderer.domElement)
+        renderer.setClearColor('#ffffff', 1.0)
+        window.addEventListener('resize', onWindowResize, false)
+
+        //stats 性能计数器
+        stats = new Stats();
+        stats.domElement.style.position="absolute";
+        stats.domElement.style.top = "0px"
+        document.body.appendChild(stats.domElement)
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth/window.innerHeight;
+        console.log(camera.aspect)
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth,window.innerHeight)
+      }
+
+      function animate() {
+          requestAnimationFrame(animate);
+         if(mash!=null){
+            mash.rotateY(0.001)
+         }
+          renderer.render(scene,camera);
+          stats.update();
+      }
+    </script>
+  </body>
+</html>
