@@ -76,6 +76,9 @@
           side: THREE.DoubleSide
         }) //粗造的材质，光都有反射 ，单边绘制 双边绘制
         // 三角形有三个点 相向三角形有两个面 画点是逆时针绘制
+        
+        //
+        //  material = new THREE.MeshBasicMaterial({color:0x000000,side:THREE.DoubleSide})
 
         var loader = new THREE.VTKLoader()
         loader.load('../assets/models/vtk/bunny.vtk', function(geometry) {
